@@ -21,8 +21,8 @@ function test1() {
 }
 
 function arrayCopy(src, srcPos, dst, dstPos, length) {
-    let scrSliced = src.slice(srcPos, (srcPos + length))
-    return dst.splice(dstPos, 0, ...scrSliced);
+    let srcSliced = src.slice(srcPos, (srcPos + length))
+    return dst.splice(dstPos, 0, ...srcSliced);
 }
 
 // 2.Write function count that returns how many times a given element encountered
@@ -37,12 +37,21 @@ function test2() {
 }
 
 function count(array, str) {
-    counter = 0;
     let res = array.reduce((sum, item) => {
         if (item === str)
-            counter++;
-    }, {})
-    return counter;
+            return acc + 1; // acc++ will not work
+        else {
+            return acc;
+        }
+    }, 0) // defining start value for accumulator
+
+    // Another way
+    // return array.reduce(function (acc, value) {
+    //     if(value === str){
+    //         acc++;
+    //     }
+    //     return acc;
+    // }, 0);
 }
 
 //3. Write function displayOccurrences(array).Array contains the repeated strings,
@@ -56,11 +65,17 @@ function test3() {
 }
 
 function displayOccurrences(array) {
-    let res = array.reduce(function (sum, curr) {
-        sum[curr] = (sum[curr] || 0) + 1;
-        return sum;
-    }, {})
-    console.log(res);
+    let res = array.reduce(function (acc, item) {
+        if (acc[item]) {
+            // defined previously
+            acc[item]++;
+        } else {
+            // undefined , new value
+            acc[item] = 1;
+        }
+        return acc;
+    }, {}) // object returned because we define an object
+    console.log(JSON.stringify(res));
 }
 
 //4.Write function ulSurround that surrounds array of strings inside <ul></ul> element.
@@ -75,11 +90,26 @@ function test4() {
 }
 
 function ulSurround(strings) {
-    let resHTML = '<ul>' +
+    return '<ul>' +
         strings.map(function (value) {
             return '<li>' + value + '</li>';
         }).join('') + '</ul>';
-    return resHTML;
+
+    //Another way using splice and decomposition (spread)
+    // const startArr = ['<ul>','</ul>'];
+    // return startArr.splice(1,0, ...strings.map(
+    //     function (value) {
+    //         return '<li>'+value+'</li>';
+    //     }
+    // )).join('');
+
+
+    //Another way etering elements as array and using decomposition (spread)
+    // return ['<ul>', ...strings.map(
+    //  function (value) {
+    //      return '<li>'+value+'</li>';
+    //  }
+    //  ) ,'</ul>'].join('');
 }
 
 //5. Write a method that will sort an array of strings in order of string length
@@ -91,14 +121,25 @@ function test5() {
 }
 
 function lengthSort(array) {
-    let arrWithLegth = array.map(function (value) {
-        return {str: value, strLength: value.length}
+    // Long way
+    // let arrWithLegth = array.map(function (value) {
+    //     return {str: value, strLength: value.length}
+    // })
+    // let sorted = arrWithLegth.sort(function (a, b) {
+    //     return (a.strLength - b.strLength);
+    // })
+    // let res = sorted.map(function (value) {
+    //     return value.str;
+    // })
+    // return res;
+    return array.sort(function (a, b) {
+        if (a.length > b.length) return 1;
+        if (a.length === b.length) return 0;
+        if (a.length < b.length) return -1;
     })
-    let sorted = arrWithLegth.sort(function (a, b) {
-        return (a.strLength - b.strLength);
-    })
-    let res = sorted.map(function (value) {
-        return value.str;
-    })
-    return res;
+    //Or more short way
+    // return array.sort(function (a, b) {
+    //     return (a.length - b.length);
+    // })
 }
+
